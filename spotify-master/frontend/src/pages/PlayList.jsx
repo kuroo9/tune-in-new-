@@ -7,61 +7,62 @@ import { UserData } from "../context/User";
 
 const PlayList = ({ user }) => {
   const { songs, setSelectedSong, setIsPlaying } = SongData();
-
   const [myPlaylist, setMyPlaylist] = useState([]);
 
+  // Fetch the user's playlist and filter songs
   useEffect(() => {
     if (songs && user && Array.isArray(user.playlist)) {
-      const filteredSongs = songs.filter((e) =>
-        user.playlist.includes(e._id.toString())
+      const filteredSongs = songs.filter((song) =>
+        user.playlist.includes(song._id.toString())
       );
       setMyPlaylist(filteredSongs);
     }
   }, [songs, user]);
 
-  const onclickHander = (id) => {
+  // Handle playing a song
+  const handlePlaySong = (id) => {
     setSelectedSong(id);
     setIsPlaying(true);
   };
 
+  // Add a song to the playlist
   const { addToPlaylist } = UserData();
-
-  const savePlayListHandler = (id) => {
+  const handleAddToPlaylist = (id) => {
     addToPlaylist(id);
+    alert("Song added to your playlist!");
   };
 
   return (
     <Layout>
+      {/* Playlist Header */}
       <div className="mt-10 flex gap-8 flex-col md:flex-row md:items-center">
-        {myPlaylist && myPlaylist[0] ? (
+        {/* Playlist Thumbnail */}
+        {myPlaylist.length > 0 ? (
           <img
             src={myPlaylist[0].thumbnail.url}
             className="w-48 rounded"
-            alt=""
+            alt="Playlist Cover"
           />
         ) : (
           <img
             src="https://via.placeholder.com/250"
             className="w-48 rounded"
-            alt=""
+            alt="Placeholder"
           />
         )}
 
+        {/* Playlist Details */}
         <div className="flex flex-col">
-          <p>Playlist</p>
+          <p className="text-sm text-gray-400">Playlist</p>
           <h2 className="text-3xl font-bold mb-4 md:text-5xl">
-            {user.name} PlayList
+            {user.name}'s Playlist
           </h2>
-          <h4>Your Favourate songs</h4>
-          <p className="mt-1">
-            <img
-              src={assets.spotify_logo}
-              className="inline-block w-6"
-              alt=""
-            />
-          </p>
+          <h4 className="text-gray-400">Your favorite songs</h4>
+       
         </div>
       </div>
+
+      {/* Playlist Table Headers */}
       <div className="grid grid-cols-3 sm:grid-cols-4 mt-10 mb-4 pl-2 text-[#a7a7a7]">
         <p>
           <b className="mr-4">#</b>
@@ -71,37 +72,60 @@ const PlayList = ({ user }) => {
         <p className="text-center">Actions</p>
       </div>
       <hr />
-      {myPlaylist &&
-        myPlaylist.map((e, i) => (
+
+      {/* Playlist Songs */}
+      {myPlaylist.length > 0 ? (
+        myPlaylist.map((song, index) => (
           <div
-            className="grid grid-cols-3 sm:grid-cols-4 mt-10 mb-4 pl-2 text-[#a7a7a7] hover:bg-[#ffffff2b] cursor-pointer"
-            key={i}
+            key={index}
+            className="grid grid-cols-3 sm:grid-cols-4 mt-4 mb-4 pl-2 text-[#a7a7a7] hover:bg-[#ffffff2b] cursor-pointer rounded-md"
           >
-            <p className="text-white">
-              <b className="mr-4 text-[#a7a7a7]">{i + 1}</b>
-              <img src={e.thumbnail.url} className="inline w-10 mr-5" alt="" />
-              {e.title}
+            {/* Song Number and Title */}
+            <p className="text-white flex items-center">
+              <b className="mr-4 text-[#a7a7a7]">{index + 1}</b>
+              <img
+                src={song.thumbnail.url}
+                className="inline w-10 mr-5 rounded"
+                alt={song.title}
+              />
+              {song.title}
             </p>
-            <p className="text-[15px]">{e.singer}</p>
+
+            {/* Artist Name */}
+            <p className="text-[15px]">{song.singer}</p>
+
+            {/* Description */}
             <p className="text-[15px] hidden sm:block">
-              {e.description.slice(0, 20)}...
+              {song.description.slice(0, 20)}...
             </p>
-            <p className="flex justify-center items-center gap-5">
-              <p
-                className="text-[15px] text-center"
-                onClick={() => savePlayListHandler(e._id)}
+
+            {/* Actions */}
+            <div className="flex justify-center items-center gap-5">
+              {/* Add to Playlist Button */}
+              <button
+                onClick={() => handleAddToPlaylist(song._id)}
+                aria-label="Add to Playlist"
+                className="text-[15px] text-center hover:text-green-500 transition-colors"
               >
                 <FaBookmark />
-              </p>
-              <p
-                className="text-[15px] text-center"
-                onClick={() => onclickHander(e._id)}
+              </button>
+
+              {/* Play Button */}
+              <button
+                onClick={() => handlePlaySong(song._id)}
+                aria-label="Play Song"
+                className="text-[15px] text-center hover:text-blue-500 transition-colors"
               >
                 <FaPlay />
-              </p>
-            </p>
+              </button>
+            </div>
           </div>
-        ))}
+        ))
+      ) : (
+        <p className="text-center text-gray-400 mt-10">
+          Your playlist is empty. Start adding songs!
+        </p>
+      )}
     </Layout>
   );
 };

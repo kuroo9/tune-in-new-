@@ -3,7 +3,6 @@ import { UserData } from "../context/User";
 import { Link, useNavigate } from "react-router-dom";
 import { SongData } from "../context/Song";
 import { MdDelete, MdAdd, MdEdit } from "react-icons/md";
-import { motion, AnimatePresence } from "framer-motion";
 import { toast } from "react-toastify";
 
 const Admin = () => {
@@ -20,6 +19,7 @@ const Admin = () => {
   } = SongData();
   const navigate = useNavigate();
 
+  // Redirect non-admin users
   if (user && user.role !== "admin") {
     navigate("/");
     return null;
@@ -45,7 +45,6 @@ const Admin = () => {
     e.preventDefault();
 
     const formData = new FormData();
-
     formData.append("title", albumTitle);
     formData.append("description", albumDescription);
     formData.append("file", albumFile);
@@ -62,7 +61,6 @@ const Admin = () => {
     e.preventDefault();
 
     const formData = new FormData();
-
     formData.append("title", songTitle);
     formData.append("description", songDescription);
     formData.append("singer", songSinger);
@@ -111,221 +109,176 @@ const Admin = () => {
   };
 
   return (
-    <div className="min-h-screen bg-[#212121] text-white p-8">
-      <Link
-        to="/"
-        className="bg-gray-800 text-white font-bold py-2 px-4 rounded-full hover:bg-gray-900 transition duration-300"
-      >
+    <div className="p-4 bg-[#121212] text-[#EAEAEA] min-h-screen">
+      {/* Navigation */}
+      <Link to="/" className="text-[#888888] hover:underline">
         Go to home page
       </Link>
 
-      <h2 className="text-2xl font-bold mb-6 mt-6">Add Album</h2>
-
-      <motion.form
-        onSubmit={addAlbumHandler}
-        className="bg-[#181818] p-6 rounded-lg shadow-lg"
-        initial={{ opacity: 0, y: -20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5 }}
-      >
-        <div className="mb-4">
-          <label className="block text-sm font-medium mb-1">Title</label>
+      {/* Add Album Form */}
+      <div className="mt-6">
+        <h2 className="text-xl font-bold mb-4 text-[#CCCCCC]">Add Album</h2>
+        <form onSubmit={addAlbumHandler} className="space-y-4">
           <input
             type="text"
             placeholder="Title"
-            className="w-full px-4 py-2 rounded-lg border border-gray-600 focus:outline-none focus:border-gray-400 bg-[#212121] text-white"
             value={albumTitle}
             onChange={(e) => setAlbumTitle(e.target.value)}
             required
+            className="block w-full p-2 border rounded bg-[#2B2B2B] text-[#EAEAEA] placeholder-[#888]"
           />
-        </div>
-        <div className="mb-4">
-          <label className="block text-sm font-medium mb-1">Description</label>
           <input
             type="text"
             placeholder="Description"
-            className="w-full px-4 py-2 rounded-lg border border-gray-600 focus:outline-none focus:border-gray-400 bg-[#212121] text-white"
             value={albumDescription}
             onChange={(e) => setAlbumDescription(e.target.value)}
             required
+            className="block w-full p-2 border rounded bg-[#2B2B2B] text-[#EAEAEA] placeholder-[#888]"
           />
-        </div>
-
-        <div className="mb-4">
-          <label className="block text-sm font-medium mb-1">Thumbnail</label>
           <input
             type="file"
-            className="w-full px-4 py-2 rounded-lg border border-gray-600 focus:outline-none focus:border-gray-400 bg-[#212121] text-white"
-            accept="image/*"
             onChange={(e) => fileChangeHandler(e, setAlbumFile)}
             required
+            className="block w-full p-2 border rounded bg-[#2B2B2B] text-[#EAEAEA] placeholder-[#888]"
           />
-        </div>
+          <button
+            type="submit"
+            className="px-4 py-2 bg-[#333333] text-[#EAEAEA] rounded"
+          >
+            {loading ? "Please Wait..." : "Add Album"}
+          </button>
+        </form>
+      </div>
 
-        <button
-          disabled={loading}
-          className="bg-gray-800 text-white font-bold py-2 px-4 rounded-full hover:bg-gray-900 transition duration-300"
-          style={{ width: "100px" }}
-        >
-          {loading ? "Please Wait..." : "Add"}
-        </button>
-      </motion.form>
-
-      <h2 className="text-2xl font-bold mb-6 mt-6">Add Songs</h2>
-
-      <motion.form
-        onSubmit={addSongHandler}
-        className="bg-[#181818] p-6 rounded-lg shadow-lg"
-        initial={{ opacity: 0, y: -20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5, delay: 0.2 }}
-      >
-        <div className="mb-4">
-          <label className="block text-sm font-medium mb-1">Title</label>
+      {/* Add Song Form */}
+      <div className="mt-6">
+        <h2 className="text-xl font-bold mb-4 text-[#CCCCCC]">Add Song</h2>
+        <form onSubmit={addSongHandler} className="space-y-4">
           <input
             type="text"
             placeholder="Title"
-            className="w-full px-4 py-2 rounded-lg border border-gray-600 focus:outline-none focus:border-gray-400 bg-[#212121] text-white"
             value={songTitle}
             onChange={(e) => setSongTitle(e.target.value)}
             required
+            className="block w-full p-2 border rounded bg-[#2B2B2B] text-[#EAEAEA] placeholder-[#888]"
           />
-        </div>
-        <div className="mb-4">
-          <label className="block text-sm font-medium mb-1">Description</label>
           <input
             type="text"
             placeholder="Description"
-            className="w-full px-4 py-2 rounded-lg border border-gray-600 focus:outline-none focus:border-gray-400 bg-[#212121] text-white"
             value={songDescription}
             onChange={(e) => setSongDescription(e.target.value)}
             required
+            className="block w-full p-2 border rounded bg-[#2B2B2B] text-[#EAEAEA] placeholder-[#888]"
           />
-        </div>
-        <div className="mb-4">
-          <label className="block text-sm font-medium mb-1">Singer</label>
           <input
             type="text"
             placeholder="Singer"
-            className="w-full px-4 py-2 rounded-lg border border-gray-600 focus:outline-none focus:border-gray-400 bg-[#212121] text-white"
             value={songSinger}
             onChange={(e) => setSongSinger(e.target.value)}
             required
+            className="block w-full p-2 border rounded bg-[#2B2B2B] text-[#EAEAEA] placeholder-[#888]"
           />
-        </div>
-
-        <select
-          className="w-full px-4 py-2 rounded-lg border border-gray-600 focus:outline-none focus:border-gray-400 bg-[#212121] text-white"
-          value={songAlbum}
-          onChange={(e) => setSongAlbum(e.target.value)}
-        >
-          <option value="">Choose Album</option>
-          {albums &&
-            albums.map((e, i) => (
-              <option value={e._id} key={i}>
-                {e.title}
-              </option>
-            ))}
-        </select>
-
-        <div className="mb-4">
-          <label className="block text-sm font-medium mb-1">Audio</label>
-          <input
-            type="file"
-            className="w-full px-4 py-2 rounded-lg border border-gray-600 focus:outline-none focus:border-gray-400 bg-[#212121] text-white"
-            accept="audio/*"
-            onChange={(e) => fileChangeHandler(e, setSongFile)}
+          <select
+            value={songAlbum}
+            onChange={(e) => setSongAlbum(e.target.value)}
             required
-          />
-        </div>
-
-        <button
-          disabled={loading}
-          className="bg-gray-800 text-white font-bold py-2 px-4 rounded-full hover:bg-gray-900 transition duration-300"
-          style={{ width: "100px" }}
-        >
-          {loading ? "Please Wait..." : "Add"}
-        </button>
-      </motion.form>
-
-      <div className="mt-8">
-        <h3 className="text-xl font-semibold mb-4">Added Albums</h3>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          <AnimatePresence>
+            className="block w-full p-2 border rounded bg-[#2B2B2B] text-[#EAEAEA] placeholder-[#888]"
+          >
+            <option value="">Choose Album</option>
             {albums &&
               albums.map((e, i) => (
-                <motion.div
-                  key={i}
-                  className="bg-[#181818] p-4 rounded-lg shadow-md"
-                  initial={{ opacity: 0, scale: 0.8 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  exit={{ opacity: 0, scale: 0.8 }}
-                  transition={{ duration: 0.3 }}
-                >
+                <option key={i} value={e._id}>
+                  {e.title}
+                </option>
+              ))}
+          </select>
+          <input
+            type="file"
+            onChange={(e) => fileChangeHandler(e, setSongFile)}
+            required
+            className="block w-full p-2 border rounded bg-[#2B2B2B] text-[#EAEAEA] placeholder-[#888]"
+          />
+          <button
+            type="submit"
+            className="px-4 py-2 bg-[#333333] text-[#EAEAEA] rounded"
+          >
+            {loading ? "Please Wait..." : "Add Song"}
+          </button>
+        </form>
+      </div>
+
+      {/* Display Added Albums */}
+      <div className="mt-8">
+        <h2 className="text-xl font-bold mb-4 text-[#CCCCCC]">Added Albums</h2>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          {albums &&
+            albums.map((e, i) => (
+              <div
+                key={i}
+                className="bg-[#2B2B2B] p-4 rounded-lg flex flex-col items-center space-y-2"
+              >
+                {e.thumbnail && (
                   <img
                     src={e.thumbnail.url}
                     alt={e.title}
-                    className="mr-1 w-52 h-52"
+                    className="w-32 h-32 object-cover rounded"
                   />
-                  <h4 className="text-lg font-bold">{e.title}</h4>
-                  <h4 className="text-sm text-gray-500">{e.description}</h4>
-                  <button
-                    onClick={() => deleteAlbumHandler(e._id)}
-                    className="px-3 py-1 bg-red-500 text-white rounded"
-                  >
-                    <MdDelete />
-                  </button>
-                </motion.div>
-              ))}
-          </AnimatePresence>
+                )}
+                <p className="font-bold text-[#EAEAEA]">{e.title}</p>
+                <p className="text-[#888]">{e.description}</p>
+                <button
+                  onClick={() => deleteAlbumHandler(e._id)}
+                  className="px-3 py-1 bg-[#333333] text-[#EAEAEA] rounded"
+                >
+                  Delete
+                </button>
+              </div>
+            ))}
         </div>
       </div>
 
+      {/* Display Added Songs */}
       <div className="mt-8">
-        <h3 className="text-xl font-semibold mb-4">Added Songs</h3>
+        <h2 className="text-xl font-bold mb-4 text-[#CCCCCC]">Added Songs</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          <AnimatePresence>
-            {songs &&
-              songs.map((e, i) => (
-                <motion.div
-                  key={i}
-                  className="bg-[#181818] p-4 rounded-lg shadow-md"
-                  initial={{ opacity: 0, scale: 0.8 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  exit={{ opacity: 0, scale: 0.8 }}
-                  transition={{ duration: 0.3 }}
-                >
-                  {e.thumbnail ? (
-                    <img
-                      src={e.thumbnail.url}
-                      alt=""
-                      className="mr-1 w-52 h-52"
+          {songs &&
+            songs.map((e, i) => (
+              <div
+                key={i}
+                className="bg-[#2B2B2B] p-4 rounded-lg flex flex-col items-center space-y-2"
+              >
+                {e.thumbnail ? (
+                  <img
+                    src={e.thumbnail.url}
+                    alt={e.title}
+                    className="w-32 h-32 object-cover rounded"
+                  />
+                ) : (
+                  <>
+                    <input
+                      type="file"
+                      onChange={(e) => fileChangeHandler(e, setSongFile)}
+                      className="block w-full p-2 border rounded bg-[#2B2B2B] text-[#EAEAEA] placeholder-[#888]"
                     />
-                  ) : (
-                    <div className="flex flex-col justify-center items-center gap-2">
-                      <input type="file" onChange={(e) => fileChangeHandler(e, setSongFile)} />
-                      <button
-                        onClick={() => addThumbnailHandler(e._id)}
-                        className="bg-green-500 text-white px-2 py-1 rounded"
-                      >
-                        Add Thumbnail
-                      </button>
-                    </div>
-                  )}
-
-                  <h4 className="text-lg font-bold">{e.title}</h4>
-                  <h4 className="text-sm text-gray-500">{e.singer}</h4>
-                  <h4 className="text-sm text-gray-500">{e.description}</h4>
-
-                  <button
-                    onClick={() => deleteSongHandler(e._id)}
-                    className="px-3 py-1 bg-red-500 text-white rounded"
-                  >
-                    <MdDelete />
-                  </button>
-                </motion.div>
-              ))}
-          </AnimatePresence>
+                    <button
+                      onClick={() => addThumbnailHandler(e._id)}
+                      className="px-3 py-1 bg-[#333333] text-[#EAEAEA] rounded"
+                    >
+                      Add Thumbnail
+                    </button>
+                  </>
+                )}
+                <p className="font-bold text-[#EAEAEA]">{e.title}</p>
+                <p className="text-[#888]">{e.singer}</p>
+                <p className="text-[#888]">{e.description}</p>
+                <button
+                  onClick={() => deleteSongHandler(e._id)}
+                  className="px-3 py-1 bg-[#333333] text-[#EAEAEA] rounded"
+                >
+                  Delete
+                </button>
+              </div>
+            ))}
         </div>
       </div>
     </div>

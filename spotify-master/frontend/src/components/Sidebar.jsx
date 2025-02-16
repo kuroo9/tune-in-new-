@@ -1,8 +1,9 @@
-import React from "react";
+import React, { useState } from "react";
 import { assets } from "../assets/assets";
 import { useNavigate } from "react-router-dom";
 import PlayListCard from "./PlayListCard";
 import { UserData } from "../context/User";
+import { SongData } from "../context/Song"; // Import SongData to access songs and albums
 import styled, { ThemeProvider, createGlobalStyle } from "styled-components";
 import { motion } from "framer-motion";
 
@@ -60,9 +61,32 @@ const NavLink = styled(motion.div)`
   }
 `;
 
+const SearchInput = styled.input`
+  width: 100%;
+  padding: 8px;
+  border-radius: 4px;
+  border: none;
+  background-color: ${props => props.theme.primary};
+  color: ${props => props.theme.text};
+  margin-bottom: 16px;
+`;
+
 const Sidebar = () => {
   const navigate = useNavigate();
   const { user } = UserData();
+  const { songs, albums } = SongData(); // Access songs and albums from context
+  const [searchQuery, setSearchQuery] = useState("");
+
+  // Filter songs and albums based on the search query
+  const filteredSongs = songs.filter(
+    (song) =>
+      song.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      song.singer.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
+  const filteredAlbums = albums.filter((album) =>
+    album.title.toLowerCase().includes(searchQuery.toLowerCase())
+  );
 
   return (
     <ThemeProvider theme={darkTheme}>
@@ -82,13 +106,42 @@ const Sidebar = () => {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 0.5 }}
-            onClick={() => navigate("/")}
           >
             <img src={assets.search_icon} className="w-6" alt="" />
             <p className="font-bold">Search</p>
           </NavLink>
+          <SearchInput
+            type="text"
+            placeholder="Search for songs or albums..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+          />
+          {/* Display filtered results dynamically */}
+          {searchQuery && (
+            <div className="bg-[#2B2B2B] p-4 rounded-lg">
+              <h3 className="font-semibold mb-2">Songs</h3>
+              {filteredSongs.length > 0 ? (
+                filteredSongs.map((song, index) => (
+                  <div key={index} className="mb-2">
+                    <p>{song.title} - {song.singer}</p>
+                  </div>
+                ))
+              ) : (
+                <p>No songs found.</p>
+              )}
+              <h3 className="font-semibold mt-4 mb-2">Albums</h3>
+              {filteredAlbums.length > 0 ? (
+                filteredAlbums.map((album, index) => (
+                  <div key={index} className="mb-2">
+                    <p>{album.title}</p>
+                  </div>
+                ))
+              ) : (
+                <p>No albums found.</p>
+              )}
+            </div>
+          )}
         </Section>
-
         <Section>
           <div className="flex items-center gap-3">
             <img src={assets.stack_icon} className="w8-" alt="" />
@@ -103,7 +156,6 @@ const Sidebar = () => {
             <PlayListCard />
           </motion.div>
         </Section>
-
         <Section>
           <motion.div
             initial={{ opacity: 0 }}
@@ -120,7 +172,6 @@ const Sidebar = () => {
             </button>
           </motion.div>
         </Section>
-
         {user && user.role === "admin" && (
           <Section>
             <motion.div
